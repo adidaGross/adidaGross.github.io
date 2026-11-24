@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Adi Gorsky · Atlassian & AI implementation</title>
+  <meta name="description" content="I set up Jira, Confluence and Rovo so teams spend less time on bureaucracy, and I build Faultwise, an AI that tells you why your tests failed.">
+  <link rel="icon" href="img/faultwise-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+  <header class="top">
+    <div class="wrap top-inner">
+      <a class="name" href="#top">Adi Gorsky</a>
+      <nav aria-label="Sections">
+        <a href="#tests">Test reports</a>
+        <a href="#jira">Jira &amp; Rovo</a>
+        <a href="#services">Services</a>
+        <a class="contact-link" href="https://www.linkedin.com/in/adi-gorsky-6319bb14b/" target="_blank" rel="noopener">Contact</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero wrap">
+      <p class="kicker">Atlassian &amp; AI implementation · 9 years in QA</p>
+      <h1>Your tools should do the work, not create more of it.</h1>
+      <p class="lede">I'm Adi. I set up Jira, Confluence and Rovo so teams spend less time on bureaucracy, and I build <b>Faultwise</b>, an AI that tells you <i>why</i> your tests failed instead of just <i>that</i> they failed. Two short demos below show the difference.</p>
+      <div class="hero-actions">
+        <a class="btn" href="#tests">See the test report demo</a>
+        <a class="btn ghost" href="#jira">See the Jira demo</a>
+      </div>
+    </section>
+
+    <!-- ============ Demo 1: test reports ============ -->
+    <section id="tests" class="demo wrap" aria-labelledby="tests-title">
+      <p class="step">01 · Test automation</p>
+      <h2 id="tests-title">Does your automation report look like this?</h2>
+      <p class="intro" id="tests-intro">Twenty-three red lines. Which ones are real bugs in the product? Which are broken tests? Someone will spend the morning finding out, and tomorrow there will be new ones.</p>
+
+      <div class="panel report" id="report">
+        <div class="panel-bar">
+          <span class="dot red"></span><span class="dot"></span><span class="dot"></span>
+          <span class="panel-title" id="report-title">CI · e2e-tests · run #1482</span>
+        </div>
+        <div class="report-body" id="report-body" aria-live="polite"></div>
+      </div>
+
+      <div class="demo-actions">
+        <button class="btn" id="triage-btn" type="button">Let Faultwise read it</button>
+        <button class="btn ghost" id="raw-btn" type="button" hidden>Show the raw report again</button>
+      </div>
+
+      <div class="outcome" id="tests-outcome" hidden>
+        <p><b>What changed:</b> every failure now has an owner and a next step. Real product bugs go to the developers with the evidence and a suggested fix. Broken tests are repaired automatically and re-run, so a person only reviews the fix.</p>
+        <p class="note">These are the real results from my <a href="https://adidagross.github.io/ai-qa-lab/" target="_blank" rel="noopener">AI QA Lab</a> demo project: 23 of 23 failures classified correctly against an answer key, and 8 of 8 broken tests repaired and passing. Ticket numbers are illustrative.</p>
+      </div>
+    </section>
+
+    <!-- ============ Demo 2: Jira ============ -->
+    <section id="jira" class="demo wrap" aria-labelledby="jira-title">
+      <p class="step">02 · Jira, Confluence &amp; Rovo</p>
+      <h2 id="jira-title">Does your Jira look like this?</h2>
+      <p class="intro" id="jira-intro">Everything is Highest. Nobody knows who owns what. The same bug is reported three times. Support creates users by hand, and the answers live in one person's head.</p>
+
+      <div class="panel jira" id="jira-panel">
+        <div class="panel-bar">
+          <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+          <span class="panel-title" id="jira-title-bar">PROJ board</span>
+          <div class="tabs" id="jira-tabs" role="tablist" hidden>
+            <button role="tab" aria-selected="true" data-tab="board">Board</button>
+            <button role="tab" aria-selected="false" data-tab="rules">Automations</button>
+            <button role="tab" aria-selected="false" data-tab="kb">Confluence</button>
+            <button role="tab" aria-selected="false" data-tab="rovo">Rovo</button>
+          </div>
+        </div>
+        <div class="jira-body" id="jira-body" aria-live="polite"></div>
+      </div>
+      <p class="swipe">Swipe the board sideways to see every column.</p>
+
+      <div class="demo-actions">
+        <button class="btn" id="clean-btn" type="button">Clean it up</button>
+        <button class="btn ghost" id="messy-btn" type="button" hidden>Show the messy board again</button>
+      </div>
+
+      <div class="outcome" id="jira-outcome" hidden>
+        <p><b>What changed:</b> a clear workflow with owners and limits on work in progress, rules that do the routine work, a knowledge base people actually keep up to date, and Rovo agents that answer customers and spot duplicates before anyone has to.</p>
+        <p class="note">Modeled on a real Jira Service Management, Confluence and Rovo setup I built for a B2B SaaS company with about 100 R&amp;D users and a 10-person support team. Board contents are demo data.</p>
+      </div>
+    </section>
+
+    <!-- ============ Services ============ -->
+    <section id="services" class="wrap services" aria-labelledby="services-title">
+      <p class="step">03 · How I can help</p>
+      <h2 id="services-title">What I do</h2>
+      <div class="service-grid">
+        <article>
+          <h3>Jira &amp; Confluence that people use</h3>
+          <p>Workflows, boards and dashboards designed around how your team really works, plus cleanup of instances that grew out of control.</p>
+        </article>
+        <article>
+          <h3>Jira Service Management</h3>
+          <p>Request types, queues, SLAs, a customer portal and escalation flows, so support stops being an inbox.</p>
+        </article>
+        <article>
+          <h3>AI agents with Rovo and Claude</h3>
+          <p>Agents that answer from your knowledge base, triage tickets, find related bugs and learn from resolved cases, connected through MCP where needed.</p>
+        </article>
+        <article>
+          <h3>AI-assisted QA with Faultwise</h3>
+          <p>Failure triage, repaired tests and accuracy measured on your own test suite, running inside your network with your own AI.</p>
+        </article>
+        <article>
+          <h3>Agile transformation &amp; training</h3>
+          <p>From waterfall to a working agile rhythm: release planning, clear ownership, and hands-on training for R&amp;D, QA, support and services.</p>
+        </article>
+        <article>
+          <h3>Also</h3>
+          <p>Linear and monday.com setup and migrations.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ Faultwise ============ -->
+    <section class="wrap product" aria-labelledby="product-title">
+      <a href="https://github.com/faultwise" target="_blank" rel="noopener" class="product-logo">
+        <picture>
+          <source media="(prefers-color-scheme: dark)" srcset="img/faultwise-logo-dark.png">
+          <img src="img/faultwise-logo.png" alt="Faultwise" width="240" height="51">
+        </picture>
+      </a>
+      <h2 id="product-title" class="visually-hidden">Faultwise</h2>
+      <p class="product-line">The AI failure triage that proves its accuracy on your own tests, runs inside your network, and files the right bug in Jira for you.</p>
+      <ul class="facts">
+        <li>Reads Playwright and JUnit results: web, mobile, desktop and server tests</li>
+        <li>Works with Claude, a local model, or any OpenAI-compatible service</li>
+        <li>Self-hosted license with setup support; pricing on request</li>
+      </ul>
+    </section>
+
+    <!-- ============ About & contact ============ -->
+    <section class="wrap about" aria-labelledby="about-title">
+      <h2 id="about-title">About me</h2>
+      <p>I've spent nine years in software quality: manual and automated testing for web, mobile and desktop apps, building QA processes from scratch, and leading QA and support teams. Most recently I implemented Jira Service Management from the ground up, built two AI agents with Claude, MCP and Rovo, and moved an R&amp;D organization from waterfall to agile. My QA background means everything I build is tested for edge cases and real adoption, not just a demo.</p>
+      <p class="cta"><a class="btn" href="https://www.linkedin.com/in/adi-gorsky-6319bb14b/" target="_blank" rel="noopener">Talk to me on LinkedIn</a></p>
+    </section>
+  </main>
+
+  <footer class="wrap footer">
+    <span>Adi Gorsky · Tel Aviv area</span>
+    <span><a href="https://adidagross.github.io/ai-qa-lab/" target="_blank" rel="noopener">AI QA Lab</a> · <a href="https://github.com/faultwise" target="_blank" rel="noopener">Faultwise</a> · <a href="https://www.linkedin.com/in/adi-gorsky-6319bb14b/" target="_blank" rel="noopener">LinkedIn</a></span>
+  </footer>
+
+  <script src="js/report-data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
