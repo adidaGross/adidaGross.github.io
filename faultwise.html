@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Adi Gorsky · Automation with Faultwise</title>
+  <meta name="description" content="Faultwise reads your failed tests together with your code and tells you which are real bugs, why, and how to fix them. Broken tests it repairs.">
+  <script>
+    try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch {}
+    // Browsers without cross-page transitions (or a page opened as a local file) get a simple fade instead
+    if (!("onpagereveal" in window) || location.protocol === "file:") document.documentElement.classList.add("fx-fallback");
+    // Back and forward buttons get a plain fade; only a click on a card grows it into the page
+    const markBack = (type, e) => { if (e.viewTransition && type === "traverse") e.viewTransition.types.add("back"); };
+    addEventListener("pageswap", (e) => markBack(e.activation && e.activation.navigationType, e));
+    addEventListener("pagereveal", (e) => markBack(window.navigation && navigation.activation && navigation.activation.navigationType, e));
+  </script>
+  <link rel="icon" href="img/faultwise-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body class="page-faultwise">
+  <div class="bg" aria-hidden="true"><div class="bg-layer"><span></span><span></span><span></span></div></div>
+  <header class="top">
+    <div class="top-inner">
+      <a class="name" href="index.html">Adi Gorsky</a>
+      <div class="top-right">
+        <nav class="tabs-nav" aria-label="Pages">
+          <a href="index.html">About</a>
+          <a href="faultwise.html" aria-current="page">Automation with Faultwise</a>
+          <a href="consulting.html">Consulting</a>
+        </nav>
+        <button class="theme-toggle" id="theme-toggle" type="button">Dark mode</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="sheet">
+        <h1>Does your <span class="mark">test report</span> look like this?</h1>
+        <p class="opening">A list of red failures, and the same question for every one of them: is the product broken, or is the test? Answering it means opening the error, then the test, then the code, one failure at a time. By the time someone is done, the developers have moved on.</p>
+        <p>I built Faultwise to answer that question. It reads each failed test together with your code, tells you which failures are real bugs and how to fix them, and repairs the tests that are simply wrong.</p>
+        <p id="tests-intro">Below is a real run from my demo project. Press the button and watch it sort the report.</p>
+      </div>
+      <aside class="sheet facts-card" aria-label="The demo run">
+        <h3>The demo run</h3>
+        <dl>
+          <div><dt>Classified correctly</dt><dd class="big">23 / 23</dd></div>
+          <div><dt>Real bugs found</dt><dd>15, with a fix for each</dd></div>
+          <div><dt>Broken tests repaired</dt><dd>8 of 8, passing again</dd></div>
+          <div><dt>Hard benchmark</dt><dd>115 of 115 with the code</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <div class="stack">
+      <div class="demo-wrap">
+        <div class="panel report" id="report">
+          <div class="panel-bar"><span class="panel-title" id="report-title">nightly e2e run</span></div>
+          <div class="report-body" id="report-body" aria-live="polite"></div>
+        </div>
+        <div class="demo-actions">
+          <button class="btn" id="triage-btn" type="button">Sort it with Faultwise</button>
+          <button class="link-btn" id="raw-btn" type="button" hidden>show the raw report again</button>
+        </div>
+      </div>
+      <p class="sheet after" id="tests-outcome" hidden>All 23 verdicts match the answer key I wrote before the run, and the 8 repaired tests pass. The ticket numbers are made up; everything else is the real output. The whole project is open on <a href="https://adidagross.github.io/ai-qa-lab/" target="_blank" rel="noopener">AI QA Lab</a>.</p>
+    </div>
+
+    <div class="info">
+      <section class="sheet">
+        <h2>What it does</h2>
+        <ul>
+          <li><b>Real bugs</b> get a severity, the root cause, the evidence and a suggested fix, ready to become a ticket.</li>
+          <li><b>Broken tests</b> get a corrected version that is run again to prove it works. A person reviews it before anything changes.</li>
+          <li><b>Problems in the environment</b> are called out separately, so nobody chases a bug that isn't there.</li>
+        </ul>
+      </section>
+      <section class="sheet">
+        <h2>Where it fits</h2>
+        <p>Faultwise reads Playwright results and JUnit XML, which almost every test framework can write: web, mobile, desktop and server tests, from pytest and JUnit to Appium and Espresso. It runs in your own CI as a command or a GitHub Action, and works with Claude, a local model, or any OpenAI-compatible service. If your code can't leave the company, it doesn't have to.</p>
+      </section>
+      <section class="sheet">
+        <h2>How accurate is it?</h2>
+        <p>I don't want you to take that on trust, so I measure it. On my demo project it classified all 23 failures correctly. In a harder benchmark of 115 generated failures designed to look like the other kind of problem, it got every one right when it could read the application code.</p>
+        <p>Before you commit, I run it on your own recent failures and we compare its verdicts with your team's. Then you know how it does on your tests, not mine.</p>
+      </section>
+      <section class="sheet contact-card">
+        <h2>Getting it</h2>
+        <p>Faultwise is a self-hosted license with my help setting it up on your tests. The price depends on the size of your team.</p>
+        <a class="btn" href="https://www.linkedin.com/in/adi-gorsky-6319bb14b/" target="_blank" rel="noopener">Ask me on LinkedIn</a>
+        <p class="fw" style="margin-top:22px">
+          <a href="https://github.com/faultwise" target="_blank" rel="noopener">
+            <img class="logo-light" src="img/faultwise-logo.png" alt="Faultwise" width="150" height="32">
+            <img class="logo-dark" src="img/faultwise-logo-dark.png" alt="Faultwise" width="150" height="32">
+          </a>
+        </p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="wrap footer">
+    <span>Adi Gorsky · Tel Aviv area</span>
+    <span><a href="https://adidagross.github.io/ai-qa-lab/" target="_blank" rel="noopener">AI QA Lab</a> · <a href="https://github.com/faultwise" target="_blank" rel="noopener">Faultwise on GitHub</a> · <a href="https://www.linkedin.com/in/adi-gorsky-6319bb14b/" target="_blank" rel="noopener">LinkedIn</a></span>
+  </footer>
+
+  <script src="js/report-data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

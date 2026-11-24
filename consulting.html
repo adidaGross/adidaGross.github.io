@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Adi Gorsky · Consulting</title>
+  <meta name="description" content="Jira, Jira Service Management, Confluence and Rovo set up around how your team works, with automations and AI agents that take over the routine work.">
+  <script>
+    try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch {}
+    // Browsers without cross-page transitions (or a page opened as a local file) get a simple fade instead
+    if (!("onpagereveal" in window) || location.protocol === "file:") document.documentElement.classList.add("fx-fallback");
+    // Back and forward buttons get a plain fade; only a click on a card grows it into the page
+    const markBack = (type, e) => { if (e.viewTransition && type === "traverse") e.viewTransition.types.add("back"); };
+    addEventListener("pageswap", (e) => markBack(e.activation && e.activation.navigationType, e));
+    addEventListener("pagereveal", (e) => markBack(window.navigation && navigation.activation && navigation.activation.navigationType, e));
+  </script>
+  <link rel="icon" href="img/faultwise-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css">
+</head>
+<body class="page-consulting">
+  <div class="bg" aria-hidden="true"><div class="bg-layer"><span></span><span></span><span></span></div></div>
+  <header class="top">
+    <div class="top-inner">
+      <a class="name" href="index.html">Adi Gorsky</a>
+      <div class="top-right">
+        <nav class="tabs-nav" aria-label="Pages">
+          <a href="index.html">About</a>
+          <a href="faultwise.html">Automation with Faultwise</a>
+          <a href="consulting.html" aria-current="page">Consulting</a>
+        </nav>
+        <button class="theme-toggle" id="theme-toggle" type="button">Dark mode</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <div class="sheet">
+        <h1>Does your <span class="mark">Jira</span> look like this?</h1>
+        <p class="opening">Everything is Highest. Nobody knows who owns what. The same bug is reported three times. Support creates users by hand, and the answers live in one person's head.</p>
+        <p>I've been on the inside of that. At my last company there were no defined workflows, no automations and no notifications. Customers asked support for basic things, like creating a user, and every ticket was investigated by hand. I set up Jira Service Management from scratch, rebuilt the R&amp;D project with one board and clear workflows, wrote knowledge bases in Confluence, and built two AI agents with Rovo and Claude.</p>
+        <p id="jira-intro">The board below is demo data, but the setup is the one I built.</p>
+      </div>
+      <aside class="sheet facts-card" aria-label="The setup I built">
+        <h3>The setup I built</h3>
+        <dl>
+          <div><dt>R&amp;D users</dt><dd class="big">~100</dd></div>
+          <div><dt>Support team</dt><dd>10 people</dd></div>
+          <div><dt>Built from scratch</dt><dd>Jira Service Management, workflows, knowledge bases</dd></div>
+          <div><dt>AI agents</dt><dd>2, with Rovo and Claude</dd></div>
+        </dl>
+      </aside>
+    </section>
+
+    <div class="stack">
+      <div class="demo-wrap">
+        <div class="panel jira" id="jira-panel">
+          <div class="panel-bar">
+            <span class="panel-title" id="jira-title-bar">board</span>
+            <div class="tabs" id="jira-tabs" role="tablist" hidden>
+              <button role="tab" aria-selected="true" data-tab="board">Board</button>
+              <button role="tab" aria-selected="false" data-tab="rules">Automations</button>
+              <button role="tab" aria-selected="false" data-tab="kb">Confluence</button>
+              <button role="tab" aria-selected="false" data-tab="rovo">Rovo</button>
+            </div>
+          </div>
+          <div class="jira-body" id="jira-body" aria-live="polite"></div>
+        </div>
+        <p class="swipe">Swipe the board sideways to see every column.</p>
+        <div class="demo-actions">
+          <button class="btn" id="clean-btn" type="button">Show it after the cleanup</button>
+          <button class="link-btn" id="messy-btn" type="button" hidden>show the messy board again</button>
+        </div>
+      </div>
+      <p class="sheet after" id="jira-outcome" hidden>Click through the tabs: the rules that do the routine work, the help article people actually keep up to date, and the Rovo agents answering a customer and spotting a known bug.</p>
+    </div>
+
+    <div class="grid-2">
+      <section class="sheet">
+        <h2>What I can set up for you</h2>
+        <ul>
+          <li><b>Jira and Confluence</b> designed around how your team really works: workflows, boards, dashboards and automations, or a cleanup of an instance that grew out of control.</li>
+          <li><b>Jira Service Management:</b> request types, queues, SLAs, a customer portal and escalation flows, so support stops being an inbox.</li>
+          <li><b>AI agents with Rovo and Claude</b> that answer from your own knowledge base, triage tickets and find related bugs, connected through MCP where it helps.</li>
+          <li><b>Knowledge bases</b> for R&amp;D, support and customers, each open to the right people.</li>
+          <li><b>A move from waterfall to agile,</b> with release planning, clear ownership and hands-on training for R&amp;D, QA, support and services.</li>
+        </ul>
+        <p>I also set up and migrate Linear and monday.com.</p>
+      </section>
+      <div class="stack" style="margin:0">
+        <section class="sheet">
+          <h2>How I work</h2>
+          <p>I start by sitting with the people who use the system every day, not only the managers who bought it. Then I map how work really moves, build the smallest setup that removes the friction, and train the team on it. I stay until it's used, because a workflow nobody follows is just another board.</p>
+        </section>
+        <section class="sheet contact-card">
+          <h2>Get in touch</h2>
+          <p>Tell me what's slowing your team down, and I'll tell you honestly whether I can help.</p>
+          <a class="btn" href="https://www.linkedin.com/in/adi-gorsky-6319bb14b/" target="_blank" rel="noopener">Message me on LinkedIn</a>
+          <p class="sign">Adi</p>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="wrap footer">
+    <span>Adi Gorsky · Tel Aviv area</span>
+    <span><a href="https://www.linkedin.com/in/adi-gorsky-6319bb14b/" target="_blank" rel="noopener">LinkedIn</a></span>
+  </footer>
+  <script src="js/app.js"></script>
+</body>
+</html>

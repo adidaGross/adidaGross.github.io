@@ -19,19 +19,65 @@ function h(tag, attrs = {}, ...children) {
   return el;
 }
 
+// Swap a demo's content without the page jumping: the panel stays where it is on
+// screen, eases to its new height, and the new content fades in.
+function smoothSwap(panel, change, focusEl) {
+  const top0 = panel.getBoundingClientRect().top;
+  const h0 = panel.offsetHeight;
+  change();
+  const drift = panel.getBoundingClientRect().top - top0;
+  if (drift) window.scrollBy({ top: drift, behavior: "instant" });
+  if (focusEl) focusEl.focus({ preventScroll: true });
+  if (reduceMotion) return;
+  const h1 = panel.offsetHeight;
+  if (h0 !== h1) panel.animate([{ height: `${h0}px` }, { height: `${h1}px` }], { duration: 380, easing: "cubic-bezier(.2,.8,.2,1)" });
+  panel.lastElementChild.animate([{ opacity: 0, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], { duration: 320, easing: "ease-out" });
+}
+
+// Open or close a box smoothly: it grows from nothing and fades in, or shrinks
+// away and fades out, so the content below glides instead of jumping.
+function toggleBox(el, show) {
+  if (!el._anims && show === !el.hidden) return;
+  if (el._anims) el._anims.forEach((a) => a.cancel());
+  if (reduceMotion) { el.hidden = !show; return; }
+  el.hidden = false;
+  const cs = getComputedStyle(el);
+  const parent = el.parentElement;
+  const gap = getComputedStyle(parent).rowGap;
+  const open = { height: `${el.offsetHeight}px`, paddingTop: cs.paddingTop, paddingBottom: cs.paddingBottom, marginTop: cs.marginTop, marginBottom: cs.marginBottom, borderTopWidth: cs.borderTopWidth, borderBottomWidth: cs.borderBottomWidth, opacity: 1, transform: "none" };
+  const shut = { height: "0px", paddingTop: "0px", paddingBottom: "0px", marginTop: "0px", marginBottom: "0px", borderTopWidth: "0px", borderBottomWidth: "0px", opacity: 0, transform: "translateY(-8px)" };
+  const timing = { duration: show ? 450 : 320, delay: show ? 150 : 0, easing: "cubic-bezier(.2,.8,.2,1)", fill: "both" };
+  el.style.overflow = "hidden";
+  // The space between the demo and the box (the grid gap) closes and opens along with it
+  const anims = [
+    el.animate(show ? [shut, open] : [open, shut], timing),
+    parent.animate(show ? [{ rowGap: "0px" }, { rowGap: gap }] : [{ rowGap: gap }, { rowGap: "0px" }], timing),
+  ];
+  el._anims = anims;
+  anims[0].onfinish = () => {
+    el._anims = null;
+    if (!show) el.hidden = true;
+    anims.forEach((a) => a.cancel());
+    el.style.overflow = "";
+  };
+}
+
 /* =====================================================================
    Demo 1: a raw test report, then Faultwise's triage of the same run.
    Data: window.REPORT, generated from the real AI QA Lab recorded run.
    ===================================================================== */
+if ($("report-body")) initReportDemo();
+if ($("jira-body")) initJiraDemo();
+
+function initReportDemo() {
 const R = window.REPORT;
 const failures = R.failures;
 const SEV = ["critical", "high", "medium", "low"];
 const appBugs = failures.filter((f) => f.verdict === "app-bug").sort((a, b) => SEV.indexOf(a.severity) - SEV.indexOf(b.severity));
 const brokenTests = failures.filter((f) => f.verdict === "test-bug");
-const intro1 = $("tests-intro").textContent;
 
 function renderRaw() {
-  $("report-title").textContent = "CI · e2e-tests · run #1482";
+  $("report-title").textContent = "nightly e2e run";
   const lines = failures.map((f, i) =>
     h("div", { class: "line", "data-i": i },
       h("span", { class: "x" }, "✘"),
@@ -48,7 +94,7 @@ async function triage() {
   const btn = $("triage-btn");
   btn.disabled = true;
   btn.textContent = "Reading the failures…";
-  $("report-title").textContent = "Faultwise · reading run #1482";
+  $("report-title").textContent = "Faultwise is reading the run…";
   const lines = [...document.querySelectorAll("#report-body .line")];
   for (const line of lines) {
     line.classList.add("scan");
@@ -58,18 +104,18 @@ async function triage() {
     line.classList.remove("scan");
   }
   await wait(700);
-  renderTriaged();
-  btn.hidden = true;
-  btn.disabled = false;
-  btn.textContent = "Let Faultwise read it";
-  $("raw-btn").hidden = false;
-  $("tests-outcome").hidden = false;
-  $("tests-intro").textContent = "Same run, after Faultwise: every failure has a verdict, a reason and a next step.";
-  $("tests-intro").classList.add("solved");
+  smoothSwap($("report"), () => {
+    renderTriaged();
+    btn.hidden = true;
+    btn.disabled = false;
+    btn.textContent = "Sort it with Faultwise";
+    $("raw-btn").hidden = false;
+    toggleBox($("tests-outcome"), true);
+  }, $("raw-btn"));
 }
 
 function renderTriaged() {
-  $("report-title").textContent = "Faultwise · triage of run #1482";
+  $("report-title").textContent = "sorted by Faultwise";
   let ticket = 214;
   const bugItems = appBugs.map((f) =>
     h("div", { class: "item" },
@@ -80,42 +126,41 @@ function renderTriaged() {
   );
   const testItems = brokenTests.map((f) =>
     h("div", { class: "item" },
-      h("span", { class: "sev fixed" }, "repaired"),
+      h("span", { class: "sev fixed" }, "test fix"),
       h("div", { class: "what" }, h("b", {}, f.title), h("span", {}, f.summary)),
-      h("span", { class: "pill ok" }, f.healed ? "re-run: passing" : "needs review")
+      h("span", { class: "pill ok" }, f.healed ? "passes now" : "needs review")
     )
   );
   const critical = appBugs.filter((f) => f.severity === "critical").length;
   $("report-body").replaceChildren(
     h("div", { class: "triaged" },
-      h("div", { class: "counts" },
-        h("div", { class: "count bug" }, h("b", {}, appBugs.length), h("span", {}, `real product bugs, ${critical} critical: sent to developers with evidence and a fix`)),
-        h("div", { class: "count test" }, h("b", {}, brokenTests.length), h("span", {}, "broken tests: repaired automatically, waiting for a quick review")),
-        h("div", { class: "count ok" }, h("b", {}, `${brokenTests.filter((f) => f.healed).length}/${brokenTests.length}`), h("span", {}, "repaired tests pass when re-run"))
+      h("p", { class: "tally" },
+        h("b", { class: "bug" }, `${appBugs.length} real bugs`), ` (${critical} critical) went to the developers with the evidence and a fix. `,
+        h("b", { class: "test" }, `${brokenTests.length} were problems in the tests`), ", and ",
+        h("b", { class: "ok" }, `${brokenTests.filter((f) => f.healed).length} of ${brokenTests.length}`), " of those are already repaired and passing."
       ),
-      h("div", { class: "group" }, h("h3", {}, "Real bugs in the product", h("small", {}, "sorted by severity")), bugItems),
-      h("div", { class: "group" }, h("h3", {}, "Problems in the tests", h("small", {}, "fixed, not a product issue")), testItems)
+      h("div", { class: "group" }, h("h3", {}, "Bugs in the product, most severe first"), bugItems),
+      h("div", { class: "group" }, h("h3", {}, "Problems in the tests"), testItems)
     )
   );
   $("report-body").scrollTop = 0;
 }
 
 $("triage-btn").addEventListener("click", triage);
-$("raw-btn").addEventListener("click", () => {
+$("raw-btn").addEventListener("click", () => smoothSwap($("report"), () => {
   renderRaw();
   $("raw-btn").hidden = true;
   $("triage-btn").hidden = false;
-  $("tests-outcome").hidden = true;
-  $("tests-intro").textContent = intro1;
-  $("tests-intro").classList.remove("solved");
-});
+  toggleBox($("tests-outcome"), false);
+}, $("triage-btn")));
 renderRaw();
+}
 
+function initJiraDemo() {
 /* =====================================================================
    Demo 2: a messy Jira board, then a clean setup with automations,
    a Confluence knowledge base and Rovo agents. Demo data.
    ===================================================================== */
-const intro2 = $("jira-intro").textContent;
 
 const MESSY = [
   ["To do", "147", [
@@ -184,10 +229,10 @@ function chip(text, kind = "") {
 }
 
 function renderMessy() {
-  $("jira-title-bar").textContent = "PROJ board";
+  $("jira-title-bar").textContent = "board";
   $("jira-tabs").hidden = true;
   const cols = MESSY.map(([name, count, cards, more]) =>
-    h("div", { class: "col" },
+    h("div", { class: "col-b" },
       h("h4", {}, name, h("span", { class: "wip" }, count)),
       cards.map(([title, tags], i) =>
         h("div", { class: "card", style: `--tilt:${((i * 37) % 5) - 2}deg` },
@@ -203,7 +248,7 @@ function renderMessy() {
 
 function renderCleanBoard() {
   const cols = CLEAN.map(([name, note, cards]) =>
-    h("div", { class: "col" },
+    h("div", { class: "col-b" },
       h("h4", {}, name, h("span", { class: "wip" }, note)),
       cards.map(([key, title, prio, notes, who]) =>
         h("div", { class: "card" },
@@ -274,7 +319,7 @@ async function renderRovo(body) {
 function showTab(name) {
   document.querySelectorAll("#jira-tabs [role=tab]").forEach((t) => t.setAttribute("aria-selected", String(t.dataset.tab === name)));
   const body = $("jira-body");
-  const titles = { board: "PROJ board · after", rules: "Automation rules", kb: "Confluence · Customer Help Center", rovo: "Rovo agents" };
+  const titles = { board: "board, after the cleanup", rules: "Automation rules", kb: "Confluence · Customer Help Center", rovo: "Rovo agents" };
   $("jira-title-bar").textContent = titles[name];
   if (name === "board") body.replaceChildren(renderCleanBoard());
   if (name === "rules") body.replaceChildren(renderRules());
@@ -294,25 +339,88 @@ async function cleanUp() {
     await wait(45);
   }
   await wait(300);
-  $("jira-tabs").hidden = false;
-  showTab("board");
-  btn.hidden = true;
-  btn.disabled = false;
-  btn.textContent = "Clean it up";
-  $("messy-btn").hidden = false;
-  $("jira-outcome").hidden = false;
-  $("jira-intro").textContent = "After: one clear workflow, owners and limits, rules that do the routine work, and agents that answer before anyone has to. Try the tabs.";
-  $("jira-intro").classList.add("solved");
+  smoothSwap($("jira-panel"), () => {
+    $("jira-tabs").hidden = false;
+    showTab("board");
+    btn.hidden = true;
+    btn.disabled = false;
+    btn.textContent = "Show it after the cleanup";
+    $("messy-btn").hidden = false;
+    toggleBox($("jira-outcome"), true);
+  }, $("messy-btn"));
 }
 
 document.querySelectorAll("#jira-tabs [role=tab]").forEach((t) => t.addEventListener("click", () => showTab(t.dataset.tab)));
 $("clean-btn").addEventListener("click", cleanUp);
-$("messy-btn").addEventListener("click", () => {
+$("messy-btn").addEventListener("click", () => smoothSwap($("jira-panel"), () => {
   renderMessy();
   $("messy-btn").hidden = true;
   $("clean-btn").hidden = false;
-  $("jira-outcome").hidden = true;
-  $("jira-intro").textContent = intro2;
-  $("jira-intro").classList.remove("solved");
-});
+  toggleBox($("jira-outcome"), false);
+}, $("clean-btn")));
 renderMessy();
+}
+
+/* =====================================================================
+   Motion: sections fade in as you scroll, and the background drifts a
+   little toward the mouse. Both stay off when the visitor asks for less motion.
+   ===================================================================== */
+if (!reduceMotion) {
+  const targets = document.querySelectorAll("main h2, main p, main ul, .next, .demo-wrap");
+  if ("IntersectionObserver" in window) {
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); }
+    }, { rootMargin: "0px 0px -8% 0px" });
+    targets.forEach((el) => {
+      if (el.getBoundingClientRect().top > window.innerHeight) { el.classList.add("reveal"); io.observe(el); }
+    });
+  }
+  const layer = document.querySelector(".bg-layer");
+  if (layer && window.matchMedia("(pointer: fine)").matches) {
+    let frame = 0;
+    window.addEventListener("mousemove", (e) => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const x = (e.clientX / window.innerWidth - 0.5) * 30;
+        const y = (e.clientY / window.innerHeight - 0.5) * 30;
+        layer.style.transform = `translate(${x}px, ${y}px)`;
+      });
+    });
+  }
+}
+
+/* =====================================================================
+   Light / dark switch. Starts from the device setting; a click picks
+   the other one and remembers it (if the browser allows storage).
+   ===================================================================== */
+(function themeSwitch() {
+  const btn = $("theme-toggle");
+  if (!btn) return;
+  const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
+  const current = () => document.documentElement.dataset.theme || (systemDark.matches ? "dark" : "light");
+  const label = () => { btn.textContent = current() === "dark" ? "Light mode" : "Dark mode"; btn.setAttribute("aria-label", `Switch to ${btn.textContent.toLowerCase()}`); };
+  btn.addEventListener("click", () => {
+    const next = current() === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem("theme", next); } catch {}
+    label();
+  });
+  systemDark.addEventListener?.("change", label);
+  label();
+})();
+
+/* Fallback page transition: fade the page out, then follow the link */
+if (document.documentElement.classList.contains("fx-fallback") && !reduceMotion) {
+  document.addEventListener("click", (e) => {
+    const a = e.target.closest("a[href]");
+    if (!a || a.target === "_blank" || e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    const href = a.getAttribute("href");
+    if (!/^[\w-]+\.html$/.test(href) || a.getAttribute("aria-current") === "page") return;
+    e.preventDefault();
+    document.documentElement.classList.add("page-leave");
+    setTimeout(() => { location.href = href; }, 240);
+  });
+  // Coming back with the browser's back button shows the cached page: undo the fade
+  window.addEventListener("pageshow", () => document.documentElement.classList.remove("page-leave"));
+}
